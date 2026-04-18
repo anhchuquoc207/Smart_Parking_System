@@ -1,0 +1,131 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #333; /* Nền tối để cái app nổi bật lên */
+}
+
+/* Khung điện thoại giả lập theo size Figma */
+.phone-frame {
+    width: 393px;
+    height: 852px;
+    background-color: #F8F9FA;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    border-radius: 40px; /* Bo góc cái vỏ điện thoại */
+    border: 8px solid #1A1D1F;
+}
+
+/* Quản lý ẩn hiện màn hình */
+.screen {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.3s ease; /* Hiệu ứng lướt mượt */
+}
+.hidden {
+    transform: translateX(100%); /* Giấu sang bên phải */
+    pointer-events: none;
+}
+.active {
+    transform: translateX(0);
+}
+
+/* --- MÀN HÌNH HOME --- */
+.header-blue {
+    background-color: #0056D2;
+    height: 180px;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    padding: 60px 20px 0 20px;
+    color: #FFFFFF;
+}
+.greeting { font-size: 16px; margin-bottom: 8px; }
+.balance { font-size: 22px; font-weight: 700; }
+
+.card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    margin: 20px;
+    padding: 24px 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.card-title { font-size: 14px; font-weight: 700; color: #6C757D; margin-bottom: 16px; }
+
+.zone-text { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+.text-green { color: #28A745; }
+.text-red { color: #DC3545; }
+.text-blue { color: #0056D2; }
+
+.main-info { font-size: 18px; font-weight: 700; color: #1A1D1F; margin-bottom: 12px; }
+.sub-info { font-size: 16px; color: #1A1D1F; margin-bottom: 24px; }
+
+/* Nút bấm chung */
+.btn {
+    width: 100%;
+    height: 56px;
+    border-radius: 12px;
+    border: none;
+    color: #FFFFFF;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.btn:active { opacity: 0.8; }
+.btn-orange { background-color: #FD7E14; }
+.btn-green { background-color: #28A745; }
+
+/* --- MÀN HÌNH PAYMENT --- */
+.top-bar {
+    display: flex;
+    align-items: center;
+    padding: 60px 20px 20px 20px;
+    color: #1A1D1F;
+}
+.icon-back { font-size: 24px; cursor: pointer; padding-right: 20px;}
+.title-checkout { font-size: 20px; font-weight: 700; flex-grow: 1; text-align: center; padding-right: 44px;}
+
+.receipt-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    color: #1A1D1F;
+    margin-bottom: 16px;
+}
+.fw-bold { font-weight: 700; }
+.text-24 { font-size: 24px; }
+
+.divider {
+    width: 100%;
+    height: 1px;
+    border-bottom: 2px dashed #E6E8EC;
+    margin: 20px 0;
+}
+.receipt-total { display: flex; justify-content: space-between; align-items: center; }
+
+.method-info { 
+    display: flex; 
+    align-items: center;
+    justify-content: flex-start; /* Dồn tất cả sang trái */
+    gap: 8px; /* Tạo khoảng cách đúng 8px giữa chữ và icon giống hệt Figma */
+}
+.icon-check { background-color: #28A745; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;}
+
+.btn-bottom {
+    position: absolute;
+    bottom: 40px;
+    left: 20px;
+    width: calc(100% - 40px); /* 393px trừ đi lề 2 bên 20px */
+}

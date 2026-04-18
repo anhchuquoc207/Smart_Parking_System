@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Parking - End User</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="phone-frame">
+        
+        <div id="screen-home" class="screen active">
+            <div class="header-blue">
+                <p class="greeting" id="user-name">Hello, Nguyen Van Quan</p>
+                <h1 class="balance" id="user-balance">BKPay Balance: 50,000 VND</h1>
+            </div>
+
+            <div class="card status-card">
+                <p class="card-title">PARKING STATUS</p>
+                <p class="zone-text text-green" id="zone-a">Zone A: 45/50 Available</p>
+                <p class="zone-text text-red" id="zone-b">Zone B: Full</p>
+            </div>
+
+            <div class="card session-card">
+                <p class="card-title">YOUR CURRENT SESSION</p>
+                <p class="main-info">Slot: A-01 | Plate: 59-X1 123.45</p>
+                <p class="sub-info">Duration: 4h 15m | Fee: 4,000 VND</p>
+                <button id="btn-pay-now" class="btn btn-orange">PAY NOW</button>
+            </div>
+        </div>
+
+        <div id="screen-payment" class="screen hidden">
+            <div class="top-bar">
+                <span id="btn-back" class="icon-back">&#10094;</span>
+                <h2 class="title-checkout">Checkout</h2>
+            </div>
+
+            <div class="card receipt-card">
+                <p class="card-title">PAYMENT SUMMARY</p>
+                <div class="receipt-line">
+                    <span>Parking Fee</span>
+                    <span class="fw-bold">4,000 VND</span>
+                </div>
+                <div class="receipt-line">
+                    <span>Service Fee</span>
+                    <span class="fw-bold">1,000 VND</span>
+                </div>
+                <div class="divider"></div>
+                <div class="receipt-total">
+                    <span class="fw-bold">TOTAL PAYMENT</span>
+                    <span class="text-red fw-bold text-24">5,000 VND</span>
+                </div>
+            </div>
+
+            <div class="card method-card">
+                <p class="card-title">Payment Method</p>
+                <div class="method-info">
+                    <span class="text-blue fw-bold">BKPay Wallet</span>
+                    <span class="icon-check">✔</span>
+                </div>
+            </div>
+
+            <button id="btn-confirm-pay" class="btn btn-green btn-bottom">CONFIRM & PAY</button>
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
