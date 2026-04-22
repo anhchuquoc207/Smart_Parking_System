@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Parking - IoT Occupancy Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <div>
+                <h1>IoT Occupancy Dashboard</h1>
+                <p class="subtitle">Module 5: Sensor Management System</p>
+            </div>
+            <div class="stats-card">
+                <div class="stat">
+                    <span class="stat-title">Total Slots</span>
+                    <span class="stat-value" id="total-slots">100</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-title text-green">Available</span>
+                    <span class="stat-value text-green" id="available-slots">100</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-title text-red">Occupied</span>
+                    <span class="stat-value text-red" id="occupied-slots">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <button id="btn-scene-morning" class="btn btn-blue">Morning Rush</button>
+            <button id="btn-scene-lunch" class="btn btn-outline">Lunch Break</button>
+            <button id="btn-scene-night" class="btn btn-outline">Night Time</button>
+            <button id="btn-scene-full" class="btn btn-outline">Full Capacity</button>
+            <button id="btn-reset" class="btn btn-outline">Clear All</button>
+        </div>
+
+        <div id="parking-grid" class="grid-container">
+            </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
