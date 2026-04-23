@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Occupancy Signage</title>
+    <style>
+        /* High contrast styling for digital signage */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .container {
+            padding: 40px;
+            border-radius: 20px;
+            background: #1e1e1e;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 80%;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            color: #aaaaaa;
+        }
+
+        #occupancy-count {
+            font-size: 12rem;
+            font-weight: bold;
+            margin: 20px 0;
+            line-height: 1;
+        }
+
+        #status-message {
+            font-size: 3.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        /* Dynamic Status Colors */
+        .status-available { color: #4ade80; } /* Green */
+        .status-near-full { color: #facc15; } /* Yellow */
+        .status-full { color: #f87171; }      /* Red */
+        
+        .bg-available { background-color: rgba(74, 222, 128, 0.1); border: 2px solid #4ade80; }
+        .bg-near-full { background-color: rgba(250, 204, 21, 0.1); border: 2px solid #facc15; }
+        .bg-full { background-color: rgba(248, 113, 113, 0.1); border: 2px solid #f87171; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>CURRENT OCCUPANCY</h1>
+        <div id="occupancy-count" class="status-available">-- / --</div>
+        <div id="status-message" class="bg-available status-available">Connecting...</div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_URL = '/api/occupancy'; // Replace with your actual backend URL
+        const REFRESH_RATE = 5000; // Refresh every 5 seconds (5000ms)
+
+        // DOM Elements
+        const countDisplay = document.getElementById('occupancy-count');
+        const statusDisplay = document.getElementById('status-message');
+
+        // Function to fetch and update the signage
+        async function updateSignage() {
+            try {
+                // In a real scenario, uncomment the fetch line below:
+                // const response = await fetch(API_URL);
+                // const data = await response.json();
+
+                // --- MOCK DATA FOR TESTING PURPOSES ---
+                // Simulating database data (remove this block in production)
+                const mockCurrent = Math.floor(Math.random() * 55); 
+                const data = { current: mockCurrent, maxCapacity: 50 };
+                // --------------------------------------
+
+                const { current, maxCapacity } = data;
+                const percentage = (current / maxCapacity) * 100;
+
+                // Update Numbers
+                countDisplay.textContent = `${current} / ${maxCapacity}`;
+
+                // Update Colors and Text based on occupancy
+                if (percentage >= 100) {
+                    countDisplay.className = 'status-full';
+                    statusDisplay.className = 'bg-full status-full';
+                    statusDisplay.textContent = 'CAPACITY REACHED';
+                } else if (percentage >= 80) {
+                    countDisplay.className = 'status-near-full';
+                    statusDisplay.className = 'bg-near-full status-near-full';
+                    statusDisplay.textContent = 'NEAR CAPACITY';
+                } else {
+                    countDisplay.className = 'status-available';
+                    statusDisplay.className = 'bg-available status-available';
+                    statusDisplay.textContent = 'PLEASE ENTER';
+                }
+
+            } catch (error) {
+                console.error("Error fetching occupancy data:", error);
+                statusDisplay.textContent = 'SYSTEM OFFLINE';
+                statusDisplay.className = 'bg-full status-full';
+            }
+        }
+
+        // Run immediately, then set interval
+        updateSignage();
+        setInterval(updateSignage, REFRESH_RATE);
+    </script>
+</body>
+</html>
