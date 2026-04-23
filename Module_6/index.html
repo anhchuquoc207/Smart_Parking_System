@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Parking - Module 6 Core System & Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <div class="brand">BK</div>
+            <a class="nav-item" href="../Module_5/index.html">Dashboard</a>
+            <a class="nav-item" href="../Module_2/index.html">Checkpoint</a>
+            <a class="nav-item" href="../Module_3/index.html">Billing App</a>
+            <a class="nav-item active" href="./index.html">Settings</a>
+        </aside>
+
+        <main class="content">
+            <header class="page-header">
+                <div>
+                    <h1>Core System & Admin</h1>
+                    <p class="subtitle">Module 6: phân quyền, cấu hình giá vé, SystemLogs</p>
+                </div>
+                <div class="header-actions">
+                    <select id="role-switcher" class="select-field">
+                        <option value="admin">Admin View</option>
+                        <option value="operator">Operator View</option>
+                        <option value="student">Student View</option>
+                    </select>
+                    <span id="system-status" class="pill pill-green">SYSTEM STABLE</span>
+                </div>
+            </header>
+
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-title">Active Sessions</span>
+                    <span id="stat-sessions" class="stat-value">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-title">Policies</span>
+                    <span id="stat-policies" class="stat-value">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-title">Open Alerts</span>
+                    <span id="stat-alerts" class="stat-value text-red">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-title">Available Slots</span>
+                    <span id="stat-available" class="stat-value text-green">0</span>
+                </div>
+            </section>
+
+            <section class="grid-two">
+                <div class="card">
+                    <div class="section-head">
+                        <h2>Roles & Permissions</h2>
+                        <button id="btn-save-roles" class="btn btn-blue">Save Roles</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Validate Exit</th>
+                                <th>Manage Pricing</th>
+                                <th>View Logs</th>
+                            </tr>
+                        </thead>
+                        <tbody id="role-body"></tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="section-head">
+                        <h2>Fee Policies</h2>
+                        <button id="btn-save-policy" class="btn btn-blue">Save Policies</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Flat Rate</th>
+                                <th>Exit Payment Required</th>
+                            </tr>
+                        </thead>
+                        <tbody id="policy-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="grid-two">
+                <div class="card led-card">
+                    <div class="section-head">
+                        <h2>Signage Preview</h2>
+                        <button id="btn-refresh-led" class="btn btn-outline">Refresh LED</button>
+                    </div>
+                    <div class="led-board">
+                        <div id="led-line-1" class="led-line led-green">ZONE A ➜ AVAILABLE: 0</div>
+                        <div id="led-line-2" class="led-line led-red">ZONE B ➜ FULL</div>
+                    </div>
+                </div>
+
+                <div class="card actions-card">
+                    <h2>Admin Actions</h2>
+                    <p class="helper-text">Use reset when you want to replay the demo from the beginning.</p>
+                    <button id="btn-reset-demo" class="btn btn-danger">Reset Demo Data</button>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="section-head">
+                    <h2>System Logs</h2>
+                    <button id="btn-refresh-logs" class="btn btn-outline">Refresh Logs</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Module</th>
+                            <th>Action</th>
+                            <th>Severity</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-body"></tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script src="../shared/spms-db.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
