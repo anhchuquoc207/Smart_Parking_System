@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPS — Scheduler & Queue Management</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="hdr-brand">
+      <div class="hdr-icon">P</div>
+      <div>
+        <div class="hdr-title">Smart Parking System</div>
+        <div class="hdr-sub">Module 1 — Scheduler &amp; Queue Management</div>
+      </div>
+    </div>
+    <span class="hdr-pill">MLQ &middot; In-memory &middot; MVP</span>
+  </header>
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-dot" style="background:#185FA5"></div>
+      <span class="stat-label">HIGH</span>
+      <span class="stat-value" id="stat0">0</span>
+    </div>
+    <div class="stat">
+      <div class="stat-dot" style="background:#BA7517"></div>
+      <span class="stat-label">MEDIUM</span>
+      <span class="stat-value" id="stat1">0</span>
+    </div>
+    <div class="stat">
+      <div class="stat-dot" style="background:#3B6D11"></div>
+      <span class="stat-label">LOW</span>
+      <span class="stat-value" id="stat2">0</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Total waiting</span>
+      <span class="stat-value" id="statTotal">0</span>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <main class="app-main">
+
+    <!-- LEFT: Control panel -->
+    <section class="panel">
+      <div class="panel-header">Add Process</div>
+      <div class="panel-body">
+
+        <div>
+          <label class="form-label" for="vehicleInput">Vehicle ID</label>
+          <input class="form-input" id="vehicleInput" type="text"
+                 placeholder="e.g. 51A-123.45" maxlength="20" />
+        </div>
+
+        <div>
+          <label class="form-label" for="prioritySelect">Priority Level</label>
+          <div class="select-wrap">
+            <select class="form-select" id="prioritySelect">
+              <option value="0">0 — HIGH (Emergency / VIP)</option>
+              <option value="1" selected>1 — MEDIUM (Pre-booked)</option>
+              <option value="2">2 — LOW (Walk-in)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label" for="burstInput">Burst Time (ticks, 1–20)</label>
+          <input class="form-input" id="burstInput" type="number"
+                 value="5" min="1" max="20" />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btnAdd">+ Add Process</button>
+          <button class="btn btn-ghost"   id="btnRandom">Random</button>
+        </div>
+
+        <hr class="sep" />
+
+        <button class="btn btn-success" id="btnSchedule">
+          &#9654; Run Scheduler
+        </button>
+        <button class="btn btn-warning" id="btnTick">
+          &#8987; Execute Tick
+        </button>
+        <button class="btn btn-reset" id="btnReset">
+          &#8635; Reset System
+        </button>
+
+        <hr class="sep" />
+
+        <div class="legend">
+          <div class="legend-row">
+            <div class="legend-dot" style="background:#185FA5"></div>
+            <span>HIGH — served first</span>
+          </div>
+          <div class="legend-row">
+            <div class="legend-dot" style="background:#BA7517"></div>
+            <span>MEDIUM — served second</span>
+          </div>
+          <div class="legend-row">
+            <div class="legend-dot" style="background:#3B6D11"></div>
+            <span>LOW — served last</span>
+          </div>
+          <p class="legend-note">
+            "Run Scheduler" picks the next highest-priority process.
+            "Execute Tick" advances it by 1 time unit.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CENTRE: Queue monitor -->
+    <section class="panel">
+      <div class="panel-header">Queue Monitor</div>
+      <div class="panel-body">
+
+        <div>
+          <div class="sec-label" style="margin-bottom:8px">Currently running</div>
+          <div id="currentProcess"></div>
+        </div>
+
+        <div>
+          <div class="sec-label" style="margin-bottom:8px">Waiting processes</div>
+          <div id="queueList"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RIGHT: Event log -->
+    <section class="panel">
+      <div class="panel-header">Event Log</div>
+      <div class="panel-body">
+        <div id="logList"></div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Scripts — load in dependency order -->
+<script src="pcb.js"></script>
+<script src="queue.js"></script>
+<script src="scheduler.js"></script>
+<script src="main.js"></script>
+
+</body>
+</html>
