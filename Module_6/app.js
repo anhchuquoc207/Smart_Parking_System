@@ -29,7 +29,7 @@ function countAlerts(db) {
 
 function renderStats(db) {
     const availability = window.SPMS.getAvailability(db);
-    statSessions.textContent = db.parkingSessions.length;
+    statSessions.textContent = db.parkingSessions.filter((item) => item.status === 'ACTIVE').length;
     statPolicies.textContent = db.feePolicies.length;
     statAlerts.textContent = countAlerts(db);
     statAvailable.textContent = availability.available;
@@ -43,23 +43,42 @@ function renderStats(db) {
     }
 }
 
+function currentRolePermissions(db) {
+    return db.rolesPermissions.find((item) => item.role === currentRole()) || { canValidateExit: false, canManagePricing: false, canViewLogs: false };
+}
+
 function renderRoles(db) {
     const readOnly = currentRole() !== 'admin';
-    roleBody.innerHTML = db.rolesPermissions.map((role) => `
-        <tr>
+    roleBody.innerHTML = db.rolesPermissions.map((role) => {
+        const rowReadOnly = readOnly || role.role === 'admin';
+        return `
+        <tr class="${role.role === currentRole() ? 'current-role-row' : ''} ${role.role === 'admin' ? 'admin-role-row' : ''}">
             <td>${role.role}</td>
-            <td><input class="checkbox" type="checkbox" data-role="${role.role}" data-key="canValidateExit" ${role.canValidateExit ? 'checked' : ''} ${readOnly ? 'disabled' : ''}></td>
-            <td><input class="checkbox" type="checkbox" data-role="${role.role}" data-key="canManagePricing" ${role.canManagePricing ? 'checked' : ''} ${readOnly ? 'disabled' : ''}></td>
-            <td><input class="checkbox" type="checkbox" data-role="${role.role}" data-key="canViewLogs" ${role.canViewLogs ? 'checked' : ''} ${readOnly ? 'disabled' : ''}></td>
+            <td><input class="checkbox" type="checkbox" data-role="${role.role}" data-key="canValidateExit" ${role.canValidateExit ? 'checked' : ''} ${rowReadOnly ? 'disabled' : ''}></td>
+            <td><input class="checkbox" type="checkbox" data-role="${role.role}" data-key="canManagePricing" ${role.canManagePricing ? 'checked' : ''} ${rowReadOnly ? 'disabled' : ''}></td>
+            <td><input class="checkbox" type="checkbox" data-role="${role.role}" data-key="canViewLogs" ${role.canViewLogs ? 'checked' : ''} ${rowReadOnly ? 'disabled' : ''}></td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 
     btnSaveRoles.disabled = readOnly;
     btnSaveRoles.style.opacity = readOnly ? '0.5' : '1';
 }
 
+function renderRoleInfo(db) {
+    const role = db.rolesPermissions.find((item) => item.role === currentRole());
+    const roleMessage = document.getElementById('role-message');
+    if (!role) {
+        roleMessage.textContent = 'Unknown role selected. Please choose a valid view.';
+        return;
+    }
+
+    roleMessage.textContent = `Viewing as ${role.role.toUpperCase()}: Validate Exit=${role.canValidateExit ? 'Yes' : 'No'}, Manage Pricing=${role.canManagePricing ? 'Yes' : 'No'}, View Logs=${role.canViewLogs ? 'Yes' : 'No'}. ${currentRole() !== 'admin' ? 'You can only update actions for the current role if that role has permission.' : 'Use the table below to update permissions for each role.'}`;
+}
+
 function renderPolicies(db) {
-    const readOnly = currentRole() !== 'admin';
+    const rolePerms = currentRolePermissions(db);
+    const readOnly = !rolePerms.canManagePricing;
     policyBody.innerHTML = db.feePolicies.map((policy) => `
         <tr>
             <td>${policy.label}</td>
@@ -83,6 +102,12 @@ function renderLed(db) {
 }
 
 function renderLogs(db) {
+    const rolePerms = currentRolePermissions(db);
+    if (!rolePerms.canViewLogs) {
+        logBody.innerHTML = `<tr><td colspan="5" class="muted">You do not have permission to view system logs under this role.</td></tr>`;
+        return;
+    }
+
     logBody.innerHTML = db.systemLogs.slice(0, 12).map((log) => {
         const statusClass = log.severity === 'ERROR' ? 'status-red' : log.severity === 'WARN' ? 'status-orange' : 'status-green';
         return `
@@ -100,6 +125,7 @@ function renderLogs(db) {
 function renderAll() {
     const db = window.SPMS.loadDb();
     renderStats(db);
+    renderRoleInfo(db);
     renderRoles(db);
     renderPolicies(db);
     renderLed(db);
@@ -124,8 +150,9 @@ function saveRoles() {
 }
 
 function savePolicies() {
-    if (currentRole() !== 'admin') return;
     const db = window.SPMS.loadDb();
+    const rolePerms = currentRolePermissions(db);
+    if (!rolePerms.canManagePricing) return;
     document.querySelectorAll('[data-policy]').forEach((input) => {
         const policy = db.feePolicies.find((item) => item.id === input.dataset.policy);
         if (!policy) return;
@@ -140,7 +167,7 @@ function savePolicies() {
         moduleCode: 'M6_ADMIN',
         severity: 'INFO',
         action: 'FEE_POLICIES_UPDATED',
-        message: 'Fee policies were updated by admin.'
+        message: `Fee policies were updated by ${currentRole()}.`
     }, db);
     window.SPMS.saveDb(db);
     renderAll();
@@ -176,5 +203,6 @@ btnRefreshLed.addEventListener('click', refreshLed);
 btnRefreshLogs.addEventListener('click', renderAll);
 btnResetDemo.addEventListener('click', resetDemo);
 window.addEventListener('storage', renderAll);
+window.addEventListener('spms-db-updated', renderAll);
 
 renderAll();

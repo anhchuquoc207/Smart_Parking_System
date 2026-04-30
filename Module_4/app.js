@@ -1,36 +1,40 @@
-// server.js
-const express = require('express');
-const mysql = require('mysql2/promise');
-const app = express();
+// Module 4 — Occupancy signage integrated with shared SPMS database.
+const REFRESH_RATE = 3000;
+const countDisplay = document.getElementById('occupancy-count');
+const statusDisplay = document.getElementById('status-message');
 
-// Database connection pool
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'your_db_user',
-    password: 'your_db_password',
-    database: 'occupancy_db'
-});
-
-const MAX_CAPACITY = 50; // Set your room's maximum capacity here
-
-// API Endpoint for the signage to call
-app.get('/api/occupancy', async (req, res) => {
+function updateSignage() {
     try {
-        // Example Query: Count the number of people currently checked in
-        const [rows] = await pool.query('SELECT COUNT(*) as currentCount FROM logs WHERE status = "entered"');
-        
-        const currentOccupancy = rows[0].currentCount;
+        const db = window.SPMS.loadDb();
+        const availability = window.SPMS.getAvailability(db);
+        const current = availability.occupied;
+        const maxCapacity = availability.total;
+        const percentage = maxCapacity === 0 ? 0 : (current / maxCapacity) * 100;
+        const [line1, line2] = window.SPMS.buildLedLines(db);
 
-        res.json({
-            current: currentOccupancy,
-            maxCapacity: MAX_CAPACITY
-        });
+        countDisplay.textContent = `${current} / ${maxCapacity}`;
+
+        if (percentage >= 100) {
+            countDisplay.className = 'status-full';
+            statusDisplay.className = 'bg-full status-full';
+            statusDisplay.textContent = 'CAPACITY REACHED';
+        } else if (percentage >= 80) {
+            countDisplay.className = 'status-near-full';
+            statusDisplay.className = 'bg-near-full status-near-full';
+            statusDisplay.textContent = `${line1} | ${line2}`;
+        } else {
+            countDisplay.className = 'status-available';
+            statusDisplay.className = 'bg-available status-available';
+            statusDisplay.textContent = `${line1} | ${line2}`;
+        }
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Database connection failed' });
+        console.error('Error reading signage data:', error);
+        statusDisplay.textContent = 'SYSTEM OFFLINE';
+        statusDisplay.className = 'bg-full status-full';
     }
-});
+}
 
-app.listen(3000, () => {
-    console.log('Backend API running on http://localhost:3000');
-});
+updateSignage();
+setInterval(updateSignage, REFRESH_RATE);
+window.addEventListener('storage', updateSignage);
+window.addEventListener('spms-db-updated', updateSignage);

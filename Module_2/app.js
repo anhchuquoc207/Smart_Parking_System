@@ -167,6 +167,7 @@ btnOpen.addEventListener('click', openGate);
 btnLock.addEventListener('click', lockGate);
 btnRefresh.addEventListener('click', renderLogs);
 window.addEventListener('storage', renderLogs);
+window.addEventListener('spms-db-updated', renderLogs);
 
 renderWaitingState();
 renderLogs();

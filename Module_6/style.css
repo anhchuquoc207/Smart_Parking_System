@@ -191,6 +191,18 @@ h1 {
     font-size: 14px;
 }
 
+.current-role-row {
+    background: rgba(0, 86, 210, 0.05);
+}
+
+.admin-role-row {
+    background: rgba(248, 209, 148, 0.3);
+}
+
+#role-message {
+    margin-bottom: 18px;
+}
+
 .checkbox {
     width: 18px;
     height: 18px;

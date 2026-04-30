@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Parking - Module 2 Exit</title>
+    <link rel="stylesheet" href="../shared/spms-ui.css">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .module-nav { display:flex; gap:8px; align-items:center; margin-top:10px; }
+        .module-nav a { display:inline-flex; align-items:center; justify-content:center; border-radius:6px; padding:6px 10px; background:#0056D2; color:#fff; text-decoration:none; font-size:0.8rem; font-weight:500; transition:background .15s; }
+        .module-nav a:hover { background:#003d99; }
+        .back-btn { background:none; border:none; color:#1A1D1F; font-size:18px; cursor:pointer; padding:0 8px; margin-right:8px; }
+        .back-btn:hover { color:#0056D2; }
+    </style>
 </head>
 <body>
     <div class="shell">
@@ -20,8 +28,13 @@
         <main class="content">
             <header class="page-header">
                 <div>
+                    <button type="button" class="back-btn" onclick="window.SPMS_UI?.goBack();">←</button>
                     <h1>Exit Checkpoint - Trạm Ra</h1>
                     <p class="subtitle">Module 2: kiểm tra thanh toán, mở barrier, xoá xe khỏi bãi</p>
+                    <div class="module-nav">
+                        <a href="../Module_3/index.html">Billing</a>
+                        <a href="../Module_1/index.html">Scheduler</a>
+                    </div>
                 </div>
                 <span id="gate-badge" class="pill pill-red">BARRIER LOCKED</span>
             </header>
@@ -90,6 +103,7 @@
     </div>
 
     <script src="../shared/spms-db.js"></script>
+    <script src="../shared/spms-ui.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

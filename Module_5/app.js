@@ -1,104 +1,92 @@
-// 1. DATA GIẢ LẬP VÀ MOCK DATABASE
-const TOTAL_SLOTS = 100;
-let parkingSlots = []; 
-
-// Hardcoded Database Scenarios
-// Mảng chứa ID của các ô đỗ đã có xe trong từng kịch bản
+// Module 5 — IoT occupancy dashboard integrated with shared SPMS database.
 const mockDatabase = {
-    // Sáng sớm: Khu A (1-50) đông đúc, Khu B (51-100) lác đác
     morningRush: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 20, 21, 22, 25, 30, 31, 35, 40, 42, 45, 51, 52, 55, 60, 75, 88],
-    
-    // Giờ trưa: Xe ra vào lộn xộn, rải rác khắp bãi
     lunchBreak: [5, 12, 17, 24, 29, 33, 38, 41, 47, 53, 58, 62, 67, 74, 81, 89, 92, 97],
-    
-    // Ban đêm: Hầu như trống, chỉ còn vài xe gửi qua đêm
     nightTime: [4, 19, 66, 99],
-    
-    // Kín chỗ: Tạo mảng tự động từ 1 đến 100
-    fullCapacity: Array.from({length: 100}, (_, i) => i + 1) 
+    fullCapacity: Array.from({ length: 100 }, (_, i) => i + 1)
 };
 
-// Khởi tạo mảng dữ liệu ban đầu (Tất cả đều trống)
-for (let i = 1; i <= TOTAL_SLOTS; i++) {
-    let prefix = i <= 50 ? "A" : "B";
-    let num = i <= 50 ? i : i - 50;
-    
-    parkingSlots.push({
-        id: i,
-        name: `${prefix}-${num.toString().padStart(2, '0')}`,
-        isOccupied: false, 
-        lastUpdated: new Date().toISOString()
-    });
-}
-
-// 2. GỌI CÁC PHẦN TỬ GIAO DIỆN
 const gridContainer = document.getElementById('parking-grid');
 const elAvailable = document.getElementById('available-slots');
 const elOccupied = document.getElementById('occupied-slots');
+const elTotal = document.getElementById('total-slots');
 
-// 3. LOGIC HIỂN THỊ (RENDER)
 function renderGrid() {
+    const db = window.SPMS.loadDb();
+    const availability = window.SPMS.getAvailability(db);
+
     gridContainer.innerHTML = '';
-    let occupiedCount = 0;
 
-    parkingSlots.forEach(slot => {
+    db.parkingSlots.forEach((slot) => {
         const slotDiv = document.createElement('div');
-        
-        if (slot.isOccupied) {
-            slotDiv.className = 'slot occupied';
-            slotDiv.innerHTML = `${slot.name} <span>OCCUPIED</span>`;
-            occupiedCount++;
-        } else {
-            slotDiv.className = 'slot empty';
-            slotDiv.innerHTML = `${slot.name} <span>EMPTY</span>`;
-        }
+        slotDiv.className = `slot ${slot.isOccupied ? 'occupied' : 'empty'}`;
+        slotDiv.innerHTML = `${slot.name} <span>${slot.isOccupied ? 'OCCUPIED' : 'EMPTY'}</span>`;
+        slotDiv.title = `Last updated: ${window.SPMS.formatDateTime(slot.lastUpdated)}`;
 
-        // Bắt sự kiện Click để đổi trạng thái thủ công (giả lập cảm biến)
-        slotDiv.addEventListener('click', () => {
-            slot.isOccupied = !slot.isOccupied;
-            renderGrid(); // Vẽ lại ngay lập tức
-        });
-
+        slotDiv.addEventListener('click', () => toggleSlot(slot.id));
         gridContainer.appendChild(slotDiv);
     });
 
-    elOccupied.innerText = occupiedCount;
-    elAvailable.innerText = TOTAL_SLOTS - occupiedCount;
-    
-    console.log("SystemLog: Dashboard Rendered. Occupied:", occupiedCount);
+    elTotal.innerText = availability.total;
+    elOccupied.innerText = availability.occupied;
+    elAvailable.innerText = availability.available;
 }
 
-// 4. LOGIC LOAD KỊCH BẢN TỪ MOCK DATABASE
-function loadScenario(scenarioArray) {
-    // Duyệt qua 100 ô, nếu ID của ô nằm trong mảng kịch bản -> Đánh dấu là có xe
-    parkingSlots.forEach(slot => {
-        slot.isOccupied = scenarioArray.includes(slot.id);
-        slot.lastUpdated = new Date().toISOString();
-    });
-    
+function toggleSlot(slotId) {
+    const db = window.SPMS.loadDb();
+    const slot = db.parkingSlots.find((item) => item.id === slotId);
+    if (!slot) return;
+
+    slot.isOccupied = !slot.isOccupied;
+    slot.lastUpdated = new Date().toISOString();
+
+    if (!slot.isOccupied) {
+        slot.sessionId = null;
+        const activeSession = db.parkingSessions.find((item) => item.slotName === slot.name && item.status === 'ACTIVE');
+        if (activeSession) {
+            activeSession.status = 'COMPLETED';
+            activeSession.exitTime = new Date().toISOString();
+        }
+    }
+
+    window.SPMS.writeSystemLog({
+        moduleCode: 'M5_SENSOR',
+        severity: 'INFO',
+        action: 'SLOT_TOGGLED',
+        message: `${slot.name} changed to ${slot.isOccupied ? 'occupied' : 'empty'}.`
+    }, db, false);
+
+    window.SPMS.saveDb(db);
     renderGrid();
 }
 
-// 5. GẮN SỰ KIỆN CHO CÁC NÚT KỊCH BẢN
-document.getElementById('btn-scene-morning').addEventListener('click', () => {
-    loadScenario(mockDatabase.morningRush);
-});
+function loadScenario(scenarioArray, scenarioName) {
+    const db = window.SPMS.loadDb();
 
-document.getElementById('btn-scene-lunch').addEventListener('click', () => {
-    loadScenario(mockDatabase.lunchBreak);
-});
+    db.parkingSlots.forEach((slot) => {
+        slot.isOccupied = scenarioArray.includes(slot.id);
+        slot.sessionId = slot.isOccupied ? (slot.sessionId || `SIM-${slot.id}`) : null;
+        slot.lastUpdated = new Date().toISOString();
+    });
 
-document.getElementById('btn-scene-night').addEventListener('click', () => {
-    loadScenario(mockDatabase.nightTime);
-});
+    window.SPMS.writeSystemLog({
+        moduleCode: 'M5_SENSOR',
+        severity: 'INFO',
+        action: 'SCENARIO_LOADED',
+        message: `${scenarioName} loaded with ${scenarioArray.length} occupied slots.`
+    }, db, false);
 
-document.getElementById('btn-scene-full').addEventListener('click', () => {
-    loadScenario(mockDatabase.fullCapacity);
-});
+    window.SPMS.saveDb(db);
+    renderGrid();
+}
 
-document.getElementById('btn-reset').addEventListener('click', () => {
-    loadScenario([]); // Truyền mảng rỗng để xóa hết
-});
+document.getElementById('btn-scene-morning').addEventListener('click', () => loadScenario(mockDatabase.morningRush, 'Morning Rush'));
+document.getElementById('btn-scene-lunch').addEventListener('click', () => loadScenario(mockDatabase.lunchBreak, 'Lunch Break'));
+document.getElementById('btn-scene-night').addEventListener('click', () => loadScenario(mockDatabase.nightTime, 'Night Time'));
+document.getElementById('btn-scene-full').addEventListener('click', () => loadScenario(mockDatabase.fullCapacity, 'Full Capacity'));
+document.getElementById('btn-reset').addEventListener('click', () => loadScenario([], 'Clear All'));
 
-// Chạy lần đầu tiên khi tải trang
+window.addEventListener('storage', renderGrid);
+window.addEventListener('spms-db-updated', renderGrid);
+
 renderGrid();

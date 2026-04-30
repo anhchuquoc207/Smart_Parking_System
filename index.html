@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BK Smart Parking System - Integrated Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1d4ed8);
+            color: #fff;
+            padding: 40px;
+        }
+        .wrap { max-width: 1100px; margin: 0 auto; }
+        .hero {
+            margin-bottom: 28px;
+        }
+        .hero h1 {
+            font-size: clamp(36px, 5vw, 58px);
+            margin: 0 0 12px;
+            letter-spacing: -0.04em;
+        }
+        .hero p {
+            max-width: 760px;
+            color: rgba(255,255,255,0.78);
+            font-size: 18px;
+            line-height: 1.65;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 18px;
+        }
+        .card {
+            display: block;
+            color: #0f172a;
+            text-decoration: none;
+            background: rgba(255,255,255,0.94);
+            border-radius: 24px;
+            padding: 24px;
+            min-height: 180px;
+            box-shadow: 0 18px 36px rgba(2,6,23,0.28);
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 24px 45px rgba(2,6,23,0.34); }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: #0056D2;
+            color: #fff;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+        h2 { margin: 0 0 10px; font-size: 22px; }
+        .card p { margin: 0; color: #475569; line-height: 1.5; }
+        .tools { margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; }
+        button {
+            border: 0;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .reset { background: #ef4444; color: white; }
+        .note { color: rgba(255,255,255,.75); margin-top: 12px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <main class="wrap">
+        <section class="hero">
+            <h1>BK Smart Parking System</h1>
+            <p>Integrated demo menu. All modules now use the same shared SPMS database through <strong>shared/spms-db.js</strong>, so payment, occupancy, exit checkpoint, signage, and admin logs stay connected.</p>
+            <div class="tools">
+                <button class="reset" id="reset-demo">Reset Shared Demo Data</button>
+            </div>
+            <div class="note">Tip: open modules in multiple tabs to see shared state updates.</div>
+        </section>
+
+        <section class="grid">
+            <a class="card" href="Module_1/index.html"><div class="badge">M1</div><h2>Scheduler & Queue</h2><p>Create vehicle entry requests and assign slots when queued processes finish.</p></a>
+            <a class="card" href="Module_2/index.html"><div class="badge">M2</div><h2>Exit Checkpoint</h2><p>Validate card/ticket/plate, block unpaid exits, open gate, and free occupied slots.</p></a>
+            <a class="card" href="Module_3/index.html"><div class="badge">M3</div><h2>Billing App</h2><p>Pay the active parking session using the shared BKPay wallet.</p></a>
+            <a class="card" href="Module_4/index.html"><div class="badge">M4</div><h2>Occupancy Signage</h2><p>Live signage screen powered by the shared parking slot data.</p></a>
+            <a class="card" href="Module_5/index.html"><div class="badge">M5</div><h2>IoT Occupancy Dashboard</h2><p>Toggle sensor slots and load parking scenarios into the shared database.</p></a>
+            <a class="card" href="Module_6/index.html"><div class="badge">M6</div><h2>Core System & Admin</h2><p>Manage fee policy, permissions, signage preview, and system logs.</p></a>
+        </section>
+    </main>
+    <script src="shared/spms-db.js"></script>
+    <script>
+        document.getElementById('reset-demo').addEventListener('click', () => {
+            window.SPMS.resetDb();
+            alert('Shared demo data has been reset.');
+        });
+    </script>
+</body>
+</html>

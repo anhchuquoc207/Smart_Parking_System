@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Parking - IoT Occupancy Dashboard</title>
+    <link rel="stylesheet" href="../shared/spms-ui.css">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <button type="button" class="spms-floating-back" onclick="window.SPMS_UI?.goBack();">← Back</button>
     <div class="dashboard-container">
         <div class="header">
             <div>
@@ -42,6 +44,8 @@
             </div>
     </div>
 
+    <script src="../shared/spms-db.js"></script>
+    <script src="../shared/spms-ui.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

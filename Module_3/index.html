@@ -4,11 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Parking - End User</title>
+    <link rel="stylesheet" href="../shared/spms-ui.css">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .module-toolbar { width:393px; margin:20px auto 0; display:flex; gap:12px; justify-content:space-between; align-items:center; }
+        .module-toolbar .back-btn { width:42px; height:42px; border-radius:12px; background:#111827; color:#fff; border:none; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+        .module-toolbar .nav-links { display:flex; gap:8px; }
+        .module-toolbar a { flex:1; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; height:42px; border-radius:12px; background:#0056D2; color:#fff; font-weight:700; transition:background .15s; }
+        .module-toolbar a:hover { background:#003d99; }
+    </style>
 </head>
 <body>
-    <div class="phone-frame">
+    <div class="billing-shell">
+        <div class="module-toolbar">
+            <button class="back-btn" onclick="window.SPMS_UI?.goBack();">←</button>
+            <div class="nav-links">
+                <a href="../Module_2/index.html">Exit</a>
+                <a href="../Module_1/index.html">Scheduler</a>
+            </div>
+        </div>
+        <div class="phone-frame">
         
         <div id="screen-home" class="screen active">
             <div class="header-blue">
@@ -66,6 +82,9 @@
 
     </div>
 
+    </div>
+    <script src="../shared/spms-db.js"></script>
+    <script src="../shared/spms-ui.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

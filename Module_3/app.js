@@ -1,65 +1,138 @@
-// 1. DATA GIẢ LẬP (MOCK DATA)
-const mockData = {
-    user: { name: "Nguyen Van Quan", balance: 50000 },
-    session: { fee: 5000, isPaid: false }
-};
-
-// 2. GỌI CÁC PHẦN TỬ GIAO DIỆN
+// Module 3 — End-user billing app integrated with shared SPMS database.
 const screenHome = document.getElementById('screen-home');
 const screenPayment = document.getElementById('screen-payment');
 const btnPayNow = document.getElementById('btn-pay-now');
 const btnBack = document.getElementById('btn-back');
 const btnConfirmPay = document.getElementById('btn-confirm-pay');
 const balanceDisplay = document.getElementById('user-balance');
+const userName = document.getElementById('user-name');
+const zoneA = document.getElementById('zone-a');
+const zoneB = document.getElementById('zone-b');
+const sessionCard = document.querySelector('.session-card');
 
-// Hàm Format tiền tệ cho đẹp (VD: 50000 -> 50,000)
-function formatCurrency(amount) {
-    return amount.toLocaleString() + " VND";
+let currentSessionId = null;
+
+function minutesToText(minutes) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    if (h <= 0) return `${m}m`;
+    return `${h}h ${m}m`;
 }
 
-// Hàm cập nhật số dư ra màn hình HTML
+function renderAvailability(db) {
+    const a = window.SPMS.getZoneAvailability('A', db);
+    const b = window.SPMS.getZoneAvailability('B', db);
+    zoneA.textContent = `Zone A: ${a.available}/${a.total} Available`;
+    zoneA.className = `zone-text ${a.available > 0 ? 'text-green' : 'text-red'}`;
+    zoneB.textContent = b.available > 0 ? `Zone B: ${b.available}/${b.total} Available` : 'Zone B: Full';
+    zoneB.className = `zone-text ${b.available > 0 ? 'text-green' : 'text-red'}`;
+}
+
+function renderNoSession() {
+    currentSessionId = null;
+    sessionCard.innerHTML = `
+        <p class="card-title">YOUR CURRENT SESSION</p>
+        <p class="main-info">No active parking session</p>
+        <p class="sub-info">Enter the parking lot through Module 1 or reset demo data.</p>
+        <button id="btn-pay-now" class="btn btn-orange" disabled>NO PAYMENT DUE</button>
+    `;
+}
+
+function renderSession(session) {
+    const started = new Date(session.entryTime).getTime();
+    const durationMins = Math.max(1, Math.floor((Date.now() - started) / 60000));
+    const paid = session.paymentStatus === 'PAID';
+
+    currentSessionId = session.id;
+    sessionCard.innerHTML = `
+        <p class="card-title">YOUR CURRENT SESSION</p>
+        <p class="main-info">Slot: ${session.slotName} | Plate: ${session.plate}</p>
+        <p class="sub-info">Duration: ${minutesToText(durationMins)} | Fee: ${window.SPMS.formatCurrency(session.amountDue)}</p>
+        <p class="sub-info">Ticket: ${session.ticketCode} | Status: ${paid ? 'Paid' : 'Unpaid'}</p>
+        <button id="btn-pay-now" class="btn ${paid ? '' : 'btn-orange'}" ${paid ? 'disabled' : ''}>${paid ? 'PAID' : 'PAY NOW'}</button>
+    `;
+
+    const freshBtn = document.getElementById('btn-pay-now');
+    if (freshBtn) {
+        freshBtn.style.backgroundColor = paid ? '#6C757D' : '#FD7E14';
+        freshBtn.addEventListener('click', openPaymentScreen);
+    } else {
+        console.warn('[M3] renderSession: button not found');
+    }
+}
+
+function updateReceipt(session) {
+    const receiptLines = document.querySelectorAll('.receipt-line .fw-bold');
+    const totalText = document.querySelector('.receipt-total .text-red');
+    if (receiptLines[0]) receiptLines[0].textContent = window.SPMS.formatCurrency(session?.amountDue || 0);
+    if (receiptLines[1]) receiptLines[1].textContent = '0 VND';
+    if (totalText) totalText.textContent = window.SPMS.formatCurrency(session?.amountDue || 0);
+}
+
 function updateUI() {
-    balanceDisplay.innerText = "BKPay Balance: " + formatCurrency(mockData.user.balance);
+    const db = window.SPMS.loadDb();
+    const { user, session } = window.SPMS.getDemoUserSession(db);
+    console.debug('[M3] updateUI', { currentSessionId, session });
+
+    renderAvailability(db);
+
+    if (!user) {
+        userName.textContent = 'Hello, Guest';
+        balanceDisplay.textContent = 'BKPay Balance: 0 VND';
+        renderNoSession();
+        return;
+    }
+
+    userName.textContent = `Hello, ${user.name}`;
+    balanceDisplay.textContent = `BKPay Balance: ${window.SPMS.formatCurrency(user.bkpayBalance)}`;
+
+    if (!session) {
+        renderNoSession();
+        updateReceipt(null);
+        return;
+    }
+
+    renderSession(session);
+    updateReceipt(session);
 }
 
-// Chạy lần đầu tiên khi mở web
-updateUI();
-
-// 3. LOGIC CHUYỂN TRANG
-btnPayNow.addEventListener('click', () => {
+function openPaymentScreen() {
+    console.debug('[M3] openPaymentScreen', { currentSessionId });
+    if (!currentSessionId) return;
     screenHome.classList.replace('active', 'hidden');
     screenPayment.classList.replace('hidden', 'active');
-});
+}
 
 btnBack.addEventListener('click', () => {
+    updateUI();
     screenPayment.classList.replace('active', 'hidden');
     screenHome.classList.replace('hidden', 'active');
 });
 
-// 4. LOGIC THANH TOÁN (Trừ tiền)
+document.addEventListener('click', (event) => {
+    if (event.target && event.target.id === 'btn-pay-now') {
+        openPaymentScreen();
+    }
+});
+
 btnConfirmPay.addEventListener('click', () => {
-    if (mockData.session.isPaid) {
-        alert("Bạn đã thanh toán vé xe này rồi!");
+    if (!currentSessionId) {
+        alert('No active parking session found.');
         return;
     }
 
-    if (mockData.user.balance >= mockData.session.fee) {
-        // Trừ tiền
-        mockData.user.balance -= mockData.session.fee;
-        mockData.session.isPaid = true;
-        
-        // Cập nhật giao diện số dư mới
-        updateUI();
-        
-        // Đổi màu nút Pay Now trên trang chủ thành màu Xám báo hiệu đã xong
-        btnPayNow.style.backgroundColor = "#6C757D";
-        btnPayNow.innerText = "PAID";
-        
-        alert("Thành công! Cổng ra đã được mở.");
-        
-        // Tự động đẩy người dùng về lại trang chủ
-        btnBack.click();
-    } else {
-        alert("Thất bại! Số dư ví BKPay không đủ.");
-    }
+    const result = window.SPMS.paySession(currentSessionId);
+    const freshDb = window.SPMS.loadDb();
+    const freshSession = freshDb.parkingSessions.find((item) => item.id === currentSessionId);
+    console.debug('[M3] paySession', { currentSessionId, result, freshSession });
+
+    alert(result.message);
+    updateUI();
+
+    if (result.ok) btnBack.click();
 });
+
+window.addEventListener('storage', updateUI);
+window.addEventListener('spms-db-updated', updateUI);
+
+updateUI();
