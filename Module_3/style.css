@@ -108,8 +108,24 @@ h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
 }
 /* style.css */
 .active-blue {
-    background-color: #007bff !important; /* Màu xanh đặc trưng */
+    background-color: #007bff !important; 
     color: white !important;
     border-color: #0056b3 !important;
     box-shadow: 0 0 10px rgba(0, 123, 255, 0.5) !important;
+}
+.zone-container {
+    margin-bottom: 30px;
+}
+
+.zone-container h3 {
+    color: #fff;
+    border-left: 4px solid #007bff;
+    padding-left: 10px;
+    margin-bottom: 15px;
+}
+
+.slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); 
+    gap: 10px;
 }
