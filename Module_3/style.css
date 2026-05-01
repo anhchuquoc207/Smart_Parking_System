@@ -48,14 +48,13 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    transition: transform 0.3s ease; /* Hiệu ứng lướt mượt */
+    display: none;
 }
 .hidden {
-    transform: translateX(100%); /* Giấu sang bên phải */
-    pointer-events: none;
+    display: none;
 }
 .active {
-    transform: translateX(0);
+    display: block;
 }
 
 /* --- MÀN HÌNH HOME --- */
@@ -144,4 +143,26 @@ body {
     bottom: 40px;
     left: 20px;
     width: calc(100% - 40px); /* 393px trừ đi lề 2 bên 20px */
+}
+
+/* --- HIỆU ỨNG TIẾN (Từ phải trượt vào) --- */
+.slide-in-right {
+    display: block !important; /* Ép nó hiện lên khi có animation */
+    animation: slideInRight 0.3s ease-out forwards;
+}
+
+@keyframes slideInRight {
+    0% { transform: translateX(100%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+/* --- HIỆU ỨNG LÙI (Từ trái trượt vào) --- */
+.slide-in-left {
+    display: block !important; /* Ép nó hiện lên khi có animation */
+    animation: slideInLeft 0.3s ease-out forwards;
+}
+
+@keyframes slideInLeft {
+    0% { transform: translateX(-100%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
 }

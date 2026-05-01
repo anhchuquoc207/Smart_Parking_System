@@ -99,14 +99,26 @@ function updateUI() {
 function openPaymentScreen() {
     console.debug('[M3] openPaymentScreen', { currentSessionId });
     if (!currentSessionId) return;
-    screenHome.classList.replace('active', 'hidden');
-    screenPayment.classList.replace('hidden', 'active');
+    
+    screenHome.classList.replace('active', 'hidden'); 
+    screenHome.classList.remove('slide-in-left', 'slide-in-right');
+    
+    screenPayment.classList.remove('hidden');
+    screenPayment.classList.remove('slide-in-left'); // Đề phòng
+    screenPayment.classList.add('slide-in-right');
 }
 
 btnBack.addEventListener('click', () => {
     updateUI();
+    
+    // Ẩn lập tức màn hình Payment (để không bị chồng)
     screenPayment.classList.replace('active', 'hidden');
-    screenHome.classList.replace('hidden', 'active');
+    screenPayment.classList.remove('slide-in-left', 'slide-in-right');
+    screenPayment.classList.remove('slide-in-right'); // Xóa class animation cũ
+    
+    // Kích hoạt animation trượt ngược lại cho Home
+    screenHome.classList.remove('hidden');
+    screenHome.classList.add('slide-in-left');
 });
 
 document.addEventListener('click', (event) => {
