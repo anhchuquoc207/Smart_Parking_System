@@ -3,45 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Parking - IoT Occupancy Dashboard</title>
+    <title>Smart Parking - End User</title>
+    <link rel="stylesheet" href="../shared/spms-ui.css">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .module-toolbar { width:393px; margin:20px auto 0; display:flex; gap:12px; justify-content:space-between; align-items:center; }
+        .module-toolbar .back-btn { width:42px; height:42px; border-radius:12px; background:#111827; color:#fff; border:none; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+        .module-toolbar .nav-links { display:flex; gap:8px; }
+        .module-toolbar a { flex:1; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; height:42px; border-radius:12px; background:#0056D2; color:#fff; font-weight:700; transition:background .15s; }
+        .module-toolbar a:hover { background:#003d99; }
+    </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <div class="header">
-            <div>
-                <h1>IoT Occupancy Dashboard</h1>
-                <p class="subtitle">Module 5: Sensor Management System</p>
+    <div class="billing-shell">
+        <div class="module-toolbar">
+            <button class="back-btn" onclick="window.SPMS_UI?.goBack();">←</button>
+            <div class="nav-links">
+                <a href="../Module_2/index.html">Exit</a>
+                <a href="../Module_1/index.html">Scheduler</a>
             </div>
-            <div class="stats-card">
-                <div class="stat">
-                    <span class="stat-title">Total Slots</span>
-                    <span class="stat-value" id="total-slots">100</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-title text-green">Available</span>
-                    <span class="stat-value text-green" id="available-slots">100</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-title text-red">Occupied</span>
-                    <span class="stat-value text-red" id="occupied-slots">0</span>
-                </div>
+        </div>
+        <div class="phone-frame">
+        
+        <div id="screen-home" class="screen active">
+            <div class="header-blue">
+                <p class="greeting" id="user-name">Hello, Nguyen Van Quan</p>
+                <h1 class="balance" id="user-balance">BKPay Balance: 50,000 VND</h1>
+            </div>
+
+            <div class="card status-card">
+                <p class="card-title">PARKING STATUS</p>
+                <p class="zone-text text-green" id="zone-a">Zone A: 45/50 Available</p>
+                <p class="zone-text text-red" id="zone-b">Zone B: Full</p>
+            </div>
+
+            <div class="card session-card">
+                <p class="card-title">YOUR CURRENT SESSION</p>
+                <p class="main-info">Slot: A-01 | Plate: 59-X1 123.45</p>
+                <p class="sub-info">Duration: 4h 15m | Fee: 4,000 VND</p>
+                <button id="btn-pay-now" class="btn btn-orange">PAY NOW</button>
             </div>
         </div>
 
-        <div class="control-panel">
-               <button id="btn-scene-morning" class="btn btn-outline">Morning Rush</button>
-                <button id="btn-scene-lunch" class="btn btn-outline">Lunch Break</button>
-                <button id="btn-scene-night" class="btn btn-outline">Night Time</button>
-                <button id="btn-scene-full" class="btn btn-outline">Full Capacity</button>
-                <button id="btn-reset" class="btn btn-outline">Clear All</button>
-  </div>
+        <div id="screen-payment" class="screen hidden">
+            <div class="top-bar">
+                <span id="btn-back" class="icon-back">&#10094;</span>
+                <h2 class="title-checkout">Checkout</h2>
+            </div>
 
-        <div id="parking-grid" 
-           
+            <div class="card receipt-card">
+                <p class="card-title">PAYMENT SUMMARY</p>
+                <div class="receipt-line">
+                    <span>Parking Fee</span>
+                    <span class="fw-bold">4,000 VND</span>
+                </div>
+                <div class="receipt-line">
+                    <span>Service Fee</span>
+                    <span class="fw-bold">1,000 VND</span>
+                </div>
+                <div class="divider"></div>
+                <div class="receipt-total">
+                    <span class="fw-bold">TOTAL PAYMENT</span>
+                    <span class="text-red fw-bold text-24">5,000 VND</span>
+                </div>
+            </div>
+
+            <div class="card method-card">
+                <p class="card-title">Payment Method</p>
+                <div class="method-info">
+                    <span class="text-blue fw-bold">BKPay Wallet</span>
+                    <span class="icon-check">✔</span>
+                </div>
+            </div>
+
+            <button id="btn-confirm-pay" class="btn btn-green btn-bottom">CONFIRM & PAY</button>
+        </div>
+
     </div>
 
+    </div>
+    <script src="../shared/spms-db.js"></script>
+    <script src="../shared/spms-ui.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
