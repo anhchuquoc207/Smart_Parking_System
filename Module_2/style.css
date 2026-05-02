@@ -54,6 +54,11 @@ body {
     background: rgba(0, 86, 210, 0.08);
 }
 
+.module-nav a.active {
+    background: #003d99;
+    color: #fff;
+}
+
 .content {
     padding: 32px;
 }

@@ -29,6 +29,23 @@ function renderLogs() {
     logBody.innerHTML = rows || '<tr><td colspan="5">No logs yet.</td></tr>';
 }
 
+function updateOpenButtonState(db) {
+    const gateState = db.gateStatus?.exitGate;
+    btnOpen.disabled = gateState === 'OPENED'; 
+}
+
+function renderGateStatus(db = window.SPMS.loadDb()) {
+    const gateState = db.gateStatus?.exitGate;
+    if (gateState === 'OPENED') {
+        gateBadge.className = 'pill pill-green';
+        gateBadge.textContent = 'GATE OPENED';
+    } else {
+        gateBadge.className = 'pill pill-red';
+        gateBadge.textContent = 'BARRIER LOCKED';
+    }
+    updateOpenButtonState(db);
+}
+
 function renderWaitingState() {
     currentSessionId = null;
     btnOpen.disabled = true;
@@ -59,6 +76,7 @@ function renderSessionResult(session, db) {
             <li><strong>Payment Status:</strong> ${isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}</li>
         </ul>
     `;
+    renderGateStatus(db);
 }
 
 function validateExit() {
@@ -113,61 +131,93 @@ function lockGate() {
         message: 'Exit gate was manually locked by operator.'
     }, db);
     window.SPMS.saveDb(db);
-    gateBadge.className = 'pill pill-red';
-    gateBadge.textContent = 'BARRIER LOCKED';
+    renderGateStatus(db);
     renderLogs();
 }
 
 function openGate() {
-    if (!currentSessionId) return;
-
     const db = window.SPMS.loadDb();
-    const session = db.parkingSessions.find((item) => item.id === currentSessionId);
-    if (!session) {
-        renderWaitingState();
-        renderLogs();
-        return;
-    }
 
-    const meta = window.SPMS.getSessionMeta(session, db);
-    const isPaid = session.paymentStatus === 'PAID' || meta.ticket?.paymentStatus === 'PAID';
-    if (!isPaid) return;
+    if (currentSessionId) {
+        const session = db.parkingSessions.find((item) => item.id === currentSessionId);
+        if (!session) {
+            renderWaitingState();
+            renderLogs();
+            return;
+        }
 
-    db.gateStatus.exitGate = 'OPENED';
-    window.SPMS.writeSystemLog({
-        moduleCode: 'M2_EXIT',
-        severity: 'INFO',
-        action: 'BARRIER_OPENED',
-        message: `Barrier opened for ${meta.credential}.`
-    }, db);
-    window.SPMS.saveDb(db);
+        const meta = window.SPMS.getSessionMeta(session, db);
+        const isPaid = session.paymentStatus === 'PAID' || meta.ticket?.paymentStatus === 'PAID';
+        if (!isPaid) return;
 
-    gateBadge.className = 'pill pill-green';
-    gateBadge.textContent = 'GATE OPENED';
-
-    setTimeout(() => {
-        const nextDb = window.SPMS.loadDb();
-        window.SPMS.completeExit(currentSessionId, nextDb);
-        const afterCloseDb = window.SPMS.loadDb();
+        db.gateStatus.exitGate = 'OPENED';
         window.SPMS.writeSystemLog({
             moduleCode: 'M2_EXIT',
             severity: 'INFO',
-            action: 'SESSION_REMOVED',
-            message: `Vehicle ${meta.plate} exited successfully and was removed from the lot.`
-        }, afterCloseDb);
-        gateBadge.className = 'pill pill-red';
-        gateBadge.textContent = 'BARRIER LOCKED';
-        renderWaitingState();
-        renderLogs();
-    }, 1800);
+            action: 'BARRIER_OPENED',
+            message: `Barrier opened for ${meta.credential}.`
+        }, db);
+        window.SPMS.saveDb(db);
+
+        renderGateStatus(db);
+
+        setTimeout(() => {
+            const nextDb = window.SPMS.loadDb();
+            window.SPMS.completeExit(currentSessionId, nextDb);
+            const afterCloseDb = window.SPMS.loadDb();
+            afterCloseDb.gateStatus.exitGate = 'LOCKED';
+            window.SPMS.writeSystemLog({
+                moduleCode: 'M2_EXIT',
+                severity: 'INFO',
+                action: 'SESSION_REMOVED',
+                message: `Vehicle ${meta.plate} exited successfully and was removed from the lot.`
+            }, afterCloseDb);
+            window.SPMS.saveDb(afterCloseDb);
+            renderGateStatus(afterCloseDb);
+            renderWaitingState();
+            renderLogs();
+        }, 5000);
+    } else {
+        db.gateStatus.exitGate = 'OPENED';
+        window.SPMS.writeSystemLog({
+            moduleCode: 'M2_EXIT',
+            severity: 'WARN',
+            action: 'GATE_OPENED_MANUAL',
+            message: 'Exit gate was manually opened by operator without validation.'
+        }, db);
+        window.SPMS.saveDb(db);
+
+        renderGateStatus(db);
+
+        setTimeout(() => {
+            const nextDb = window.SPMS.loadDb();
+            nextDb.gateStatus.exitGate = 'LOCKED';
+            window.SPMS.writeSystemLog({
+                moduleCode: 'M2_EXIT',
+                severity: 'INFO',
+                action: 'GATE_AUTO_LOCKED',
+                message: 'Exit gate automatically locked after manual opening.'
+            }, nextDb);
+            window.SPMS.saveDb(nextDb);
+            renderGateStatus(nextDb);
+            renderLogs();
+        }, 1800);
+    }
 }
 
 btnValidate.addEventListener('click', validateExit);
 btnOpen.addEventListener('click', openGate);
 btnLock.addEventListener('click', lockGate);
 btnRefresh.addEventListener('click', renderLogs);
-window.addEventListener('storage', renderLogs);
-window.addEventListener('spms-db-updated', renderLogs);
+window.addEventListener('storage', () => {
+    renderGateStatus();
+    renderLogs();
+});
+window.addEventListener('spms-db-updated', () => {
+    renderGateStatus();
+    renderLogs();
+});
 
 renderWaitingState();
+renderGateStatus();
 renderLogs();

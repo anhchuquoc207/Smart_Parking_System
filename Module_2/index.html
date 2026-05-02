@@ -20,8 +20,8 @@
         <aside class="sidebar">
             <div class="brand">BK</div>
             <a class="nav-item" href="../Module_5/index.html">Dashboard</a>
-            <a class="nav-item" href="../Module_3/index.html">Billing App</a>
             <a class="nav-item active" href="./index.html">Checkpoint</a>
+            <a class="nav-item" href="../Module_3/index.html">Billing App</a>
             <a class="nav-item" href="../Module_6/index.html">Settings</a>
         </aside>
 
@@ -32,8 +32,9 @@
                     <h1>Exit Checkpoint - Trạm Ra</h1>
                     <p class="subtitle">Module 2: kiểm tra thanh toán, mở barrier, xoá xe khỏi bãi</p>
                     <div class="module-nav">
-                        <a href="../Module_3/index.html">Billing</a>
-                        <a href="../Module_1/index.html">Scheduler</a>
+                        <a class="nav-item" href="../Module_3/index.html">Billing</a>
+                        <a class="nav-item active" href="./index.html">Checkpoint</a>
+                        <a class="nav-item" href="../Module_1/index.html">Scheduler</a>
                     </div>
                 </div>
                 <span id="gate-badge" class="pill pill-red">BARRIER LOCKED</span>
@@ -75,9 +76,9 @@
                     <h2>Gate Actions</h2>
                     <div class="action-row">
                         <button id="btn-open" class="circle-btn open" disabled>OPEN GATE</button>
-                        <button id="btn-lock" class="circle-btn lock">LOCK CARD</button>
+                        <button id="btn-lock" class="circle-btn lock">LOCK GATE</button>
                     </div>
-                    <p class="action-hint">
+                    <p class="action-hint">Gate auto-locks after 5s after manual openning.</p>
                 </div>
             </section>
 
