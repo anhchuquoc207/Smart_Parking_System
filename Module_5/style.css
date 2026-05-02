@@ -6,7 +6,7 @@
 }
 
 body {
-    background-color: #1A1D1F; /* Nền tối cho chuẩn Dashboard */
+    background-color: #1A1D1F; 
     color: #FFFFFF;
     padding: 40px 20px;
     display: flex;
@@ -34,7 +34,7 @@ body {
 h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
 .subtitle { color: #6C757D; font-size: 14px; }
 
-/* Stats Panel */
+
 .stats-card {
     display: flex;
     gap: 24px;
@@ -50,7 +50,7 @@ h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
 .text-green { color: #28A745; }
 .text-red { color: #DC3545; }
 
-/* Controls */
+
 .control-panel {
     display: flex;
     align-items: center;
@@ -72,7 +72,6 @@ h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
 .btn-outline { background-color: transparent; border: 1px solid #6C757D; color: #E6E8EC; }
 .hint-text { color: #6C757D; font-size: 13px; font-style: italic; }
 
-/* Grid 100 Ô đỗ */
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
@@ -95,7 +94,7 @@ h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
 
 .slot span { font-size: 11px; font-weight: 400; margin-top: 4px; opacity: 0.8; }
 
-/* Trạng thái màu sắc (Xanh -> Đỏ) */
+
 .slot.empty {
     background-color: rgba(40, 167, 69, 0.15);
     color: #28A745;
@@ -106,4 +105,27 @@ h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
     background-color: rgba(220, 53, 69, 0.15);
     color: #DC3545;
     border-color: rgba(220, 53, 69, 0.4);
+}
+/* style.css */
+.active-blue {
+    background-color: #007bff !important; 
+    color: white !important;
+    border-color: #0056b3 !important;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5) !important;
+}
+.zone-container {
+    margin-bottom: 30px;
+}
+
+.zone-container h3 {
+    color: #fff;
+    border-left: 4px solid #007bff;
+    padding-left: 10px;
+    margin-bottom: 15px;
+}
+
+.slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); 
+    gap: 10px;
 }
