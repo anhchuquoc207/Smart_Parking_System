@@ -6,7 +6,6 @@
     <title>Occupancy Signage</title>
     <link rel="stylesheet" href="../shared/spms-ui.css">
     <style>
-        /* High contrast styling for digital signage */
         body {
             margin: 0;
             padding: 0;
@@ -18,57 +17,77 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
-            text-align: center;
         }
 
-        .container {
-            padding: 40px;
-            border-radius: 20px;
+        #zones-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            gap: 10vw;
+        }
+
+        .zone-card {
+            width: 30vw;
+            max-width: 450px;
+            height: 75vh;
+            max-height: 800px;
+            border: 8px solid #4ade80;
+            border-radius: 10px;
             background: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+            padding: 40px 20px;
+            box-sizing: border-box;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            width: 80%;
-            max-width: 800px;
         }
 
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-            color: #aaaaaa;
-        }
-
-        #occupancy-count {
-            font-size: 12rem;
+        .zone-title {
+            font-size: 6rem;
             font-weight: bold;
-            margin: 20px 0;
-            line-height: 1;
+            color: #ffffff;
+            text-align: center;
+            line-height: 1.1;
         }
 
-        #status-message {
-            font-size: 3.5rem;
+        .zone-status {
+            font-size: 3rem;
             font-weight: bold;
             text-transform: uppercase;
-            padding: 20px;
-            border-radius: 15px;
+            letter-spacing: 2px;
         }
 
-        /* Dynamic Status Colors */
-        .status-available { color: #4ade80; } /* Green */
-        .status-near-full { color: #facc15; } /* Yellow */
-        .status-full { color: #f87171; }      /* Red */
-        
-        .bg-available { background-color: rgba(74, 222, 128, 0.1); border: 2px solid #4ade80; }
-        .bg-near-full { background-color: rgba(250, 204, 21, 0.1); border: 2px solid #facc15; }
-        .bg-full { background-color: rgba(248, 113, 113, 0.1); border: 2px solid #f87171; }
+        .zone-count {
+            font-size: 4.5rem;
+            font-weight: bold;
+        }
+
+        .border-available { border-color: #4ade80; }
+        .border-near-full { border-color: #facc15; }
+        .border-full      { border-color: #f87171; }
+
+        .text-available { color: #4ade80; }
+        .text-near-full { color: #facc15; }
+        .text-full      { color: #f87171; }
     </style>
 </head>
 <body>
     <button type="button" class="spms-floating-back" onclick="window.SPMS_UI?.goBack();">← Back</button>
 
-    <div class="container">
-        <h1>CURRENT OCCUPANCY</h1>
-        <div id="occupancy-count" class="status-available">-- / --</div>
-        <div id="status-message" class="bg-available status-available">Connecting...</div>
+    <div id="zones-container">
+        <div id="zone-a-card" class="zone-card border-available">
+            <div class="zone-title">ZONE A</div>
+            <div id="zone-a-status" class="zone-status text-available">AVAILABLE</div>
+            <div id="zone-a-count" class="zone-count text-available">--/--</div>
+        </div>
+
+        <div id="zone-b-card" class="zone-card border-available">
+            <div class="zone-title">ZONE B</div>
+            <div id="zone-b-status" class="zone-status text-available">AVAILABLE</div>
+            <div id="zone-b-count" class="zone-count text-available">--/--</div>
+        </div>
     </div>
 
     <script src="../shared/spms-db.js"></script>
