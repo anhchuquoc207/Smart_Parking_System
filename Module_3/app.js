@@ -1,4 +1,4 @@
-// Module 3 — End-user billing app integrated with shared SPMS database.
+// Module 3 — End-user billing app integrated with shared SPMS database. (new)
 const screenHome = document.getElementById('screen-home');
 const screenPayment = document.getElementById('screen-payment');
 const btnPayNow = document.getElementById('btn-pay-now');
