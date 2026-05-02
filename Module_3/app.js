@@ -71,7 +71,18 @@ function updateReceipt(session) {
 
 function updateUI() {
     const db = window.SPMS.loadDb();
-    const { user, session } = window.SPMS.getDemoUserSession(db);
+    let { user, session } = window.SPMS.getDemoUserSession(db);
+
+    if (currentSessionId) {
+        const preferredSession = db.parkingSessions
+            .find((item) => item.id === currentSessionId && item.status === 'ACTIVE') || null;
+
+        if (preferredSession) {
+            session = preferredSession;
+            user = session ? db.users.find((item) => item.id === session.userId) || null : null;
+        }
+    }
+
     console.debug('[M3] updateUI', { currentSessionId, session });
 
     renderAvailability(db);
