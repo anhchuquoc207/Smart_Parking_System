@@ -7,8 +7,13 @@ const systemStatus = document.getElementById('system-status');
 const roleBody = document.getElementById('role-body');
 const policyBody = document.getElementById('policy-body');
 const logBody = document.getElementById('log-body');
-const ledLine1 = document.getElementById('led-line-1');
-const ledLine2 = document.getElementById('led-line-2');
+const zoneACard = document.getElementById('zone-a-card');
+const zoneAStatus = document.getElementById('zone-a-status');
+const zoneACount = document.getElementById('zone-a-count');
+
+const zoneBCard = document.getElementById('zone-b-card');
+const zoneBStatus = document.getElementById('zone-b-status');
+const zoneBCount = document.getElementById('zone-b-count');
 const btnSaveRoles = document.getElementById('btn-save-roles');
 const btnSavePolicy = document.getElementById('btn-save-policy');
 const btnRefreshLed = document.getElementById('btn-refresh-led');
@@ -95,10 +100,69 @@ function renderPolicies(db) {
     btnSavePolicy.style.opacity = readOnly ? '0.5' : '1';
 }
 
+function parseZoneData(lineString, zoneMaxCapacity = 50) {
+    let statusText = "AVAILABLE"; 
+    let displayCount = "--/--";
+    let colorTheme = "available";
+
+    if (!lineString) return { statusText, displayCount, colorTheme };
+
+    const match = lineString.match(/(\d+)\/(\d+)/);
+    
+    if (match) {
+        const available = parseInt(match[1], 10);
+        const total = parseInt(match[2], 10);
+        
+        const occupied = total - available;
+        displayCount = `${occupied}/${total}`;
+
+        const percentage = total === 0 ? 0 : (occupied / total) * 100;
+        
+        if (percentage >= 100) {
+            statusText = "FULL";
+            colorTheme = "full";
+        } else if (percentage >= 80) {
+            statusText = "NEAR FULL";
+            colorTheme = "near-full";
+        } else {
+            statusText = "AVAILABLE";
+            colorTheme = "available";
+        }
+    } else {
+        if (lineString.includes("FULL") || lineString.includes("CAPACITY")) {
+            statusText = "FULL";
+            colorTheme = "full";
+            displayCount = `${zoneMaxCapacity}/${zoneMaxCapacity}`;
+        } else if (lineString.includes("NEAR FULL")) {
+            statusText = "NEAR FULL";
+            colorTheme = "near-full";
+        }
+    }
+
+    return { statusText, displayCount, colorTheme };
+}
+
 function renderLed(db) {
+    const availability = window.SPMS.getAvailability(db);
+    
+    const fallbackZoneMax = availability.total > 0 ? (availability.total / 2) : 50;
+    
     const [line1, line2] = window.SPMS.buildLedLines(db);
-    ledLine1.textContent = line1;
-    ledLine2.textContent = line2;
+
+    const zoneA = parseZoneData(line1, fallbackZoneMax);
+    const zoneB = parseZoneData(line2, fallbackZoneMax);
+
+    zoneACard.className = `zone-card border-${zoneA.colorTheme}`;
+    zoneAStatus.className = `zone-status text-${zoneA.colorTheme}`;
+    zoneAStatus.textContent = zoneA.statusText;
+    zoneACount.className = `zone-count text-${zoneA.colorTheme}`;
+    zoneACount.textContent = zoneA.displayCount;
+
+    zoneBCard.className = `zone-card border-${zoneB.colorTheme}`;
+    zoneBStatus.className = `zone-status text-${zoneB.colorTheme}`;
+    zoneBStatus.textContent = zoneB.statusText;
+    zoneBCount.className = `zone-count text-${zoneB.colorTheme}`;
+    zoneBCount.textContent = zoneB.displayCount;
 }
 
 function renderLogs(db) {

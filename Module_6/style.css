@@ -29,7 +29,7 @@ body {
     width: 72px;
     height: 72px;
     border-radius: 18px;
-    background: #0056D2;
+    background: transparent;
     color: #FFFFFF;
     display: flex;
     align-items: center;
@@ -37,6 +37,12 @@ body {
     font-size: 28px;
     font-weight: 700;
     margin-bottom: 20px;
+}
+
+.brand img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .nav-item {
@@ -161,6 +167,20 @@ h1 {
     cursor: pointer;
 }
 
+.back-btn {
+    background: none;
+    border: none;
+    color: #1A1D1F;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 10px 0 0;
+    margin-bottom: 8px;
+}
+
+.back-btn:hover {
+    color: #0056D2;
+}
+
 .btn-blue {
     background: #0056D2;
     color: #FFFFFF;
@@ -218,6 +238,56 @@ h1 {
     justify-content: center;
     gap: 20px;
 }
+
+#zones-container {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    width: 100%;
+    gap: 24px;
+}
+
+.zone-card {
+    flex: 1 1 0;
+    min-width: 150px;
+    border-radius: 18px;
+    padding: 28px 18px;
+    background: #1e1e1e;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    border: 6px solid #4ade80;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+}
+
+.zone-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    color: #ffffff;
+}
+
+.zone-status {
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.zone-count {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.border-available { border-color: #4ade80; }
+.border-near-full { border-color: #facc15; }
+.border-full      { border-color: #f87171; }
+
+.text-available { color: #4ade80; }
+.text-near-full { color: #facc15; }
+.text-full      { color: #f87171; }
 
 .led-line {
     font-size: 36px;

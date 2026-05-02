@@ -34,6 +34,20 @@ body {
 h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
 .subtitle { color: #6C757D; font-size: 14px; }
 
+.back-btn {
+    background: none;
+    border: none;
+    color: #E6E8EC;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 0 10px 0 0;
+    margin-bottom: 8px;
+}
+
+.back-btn:hover {
+    color: #0056D2;
+}
+
 
 .stats-card {
     display: flex;

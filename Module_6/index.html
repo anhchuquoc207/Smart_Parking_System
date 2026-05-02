@@ -9,11 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <button type="button" class="spms-floating-back" onclick="window.SPMS_UI?.goBack();">← Back</button>
     <div class="shell">
         <aside class="sidebar">
-            <div class="brand">BK</div>
-            <a class="nav-item" href="../Module_5/index.html">Dashboard</a>
+                <div class="brand"><img src="../shared/bk-logo.svg" alt="BK logo"></div>
             <a class="nav-item" href="../Module_2/index.html">Checkpoint</a>
             <a class="nav-item" href="../Module_3/index.html">Billing App</a>
             <a class="nav-item active" href="./index.html">Settings</a>
@@ -22,6 +20,7 @@
         <main class="content">
             <header class="page-header">
                 <div>
+                    <button type="button" class="back-btn" onclick="window.SPMS_UI?.goBack();">←</button>
                     <h1>Core System & Admin</h1>
                     <p class="subtitle">Module 6: phân quyền, cấu hình giá vé, SystemLogs</p>
                 </div>
@@ -99,8 +98,18 @@
                         <button id="btn-refresh-led" class="btn btn-outline">Refresh LED</button>
                     </div>
                     <div class="led-board">
-                        <div id="led-line-1" class="led-line led-green">ZONE A ➜ AVAILABLE: 0</div>
-                        <div id="led-line-2" class="led-line led-red">ZONE B ➜ FULL</div>
+                        <div id="zones-container">
+                            <div id="zone-a-card" class="zone-card border-available">
+                                <div class="zone-title">ZONE A</div>
+                                <div id="zone-a-status" class="zone-status text-available">AVAILABLE</div>
+                                <div id="zone-a-count" class="zone-count text-available">--/--</div>
+                            </div>
+                            <div id="zone-b-card" class="zone-card border-available">
+                                <div class="zone-title">ZONE B</div>
+                                <div id="zone-b-status" class="zone-status text-available">AVAILABLE</div>
+                                <div id="zone-b-count" class="zone-count text-available">--/--</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
