@@ -230,6 +230,12 @@ label {
     line-height: 1.55;
 }
 
+.gate-status-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 18px;
+}
+
 .section-head {
     display: flex;
     justify-content: space-between;

@@ -58,13 +58,13 @@ function renderWaitingState() {
 
 function renderSessionResult(session, db) {
     const meta = window.SPMS.getSessionMeta(session, db);
-    const isPaid = session.paymentStatus === 'PAID' || meta.ticket?.paymentStatus === 'PAID';
+    const exitValidation = window.SPMS.getExitValidation(session, db);
 
     currentSessionId = session.id;
-    btnOpen.disabled = !isPaid;
-    resultPanel.className = `result-panel ${isPaid ? 'success' : 'error'}`;
+    btnOpen.disabled = !exitValidation.canExit;
+    resultPanel.className = `result-panel ${exitValidation.canExit ? 'success' : 'error'}`;
     resultPanel.innerHTML = `
-        <div class="result-title">${isPaid ? 'EXIT APPROVED' : 'PAYMENT REQUIRED'}</div>
+        <div class="result-title">${exitValidation.canExit ? 'EXIT APPROVED' : 'PAYMENT REQUIRED'}</div>
         <ul>
             <li><strong>Session:</strong> ${session.id}</li>
             <li><strong>Owner:</strong> ${meta.displayName}</li>
@@ -73,7 +73,8 @@ function renderSessionResult(session, db) {
             <li><strong>Slot:</strong> ${session.slotName}</li>
             <li><strong>Time In:</strong> ${window.SPMS.formatDateTime(session.entryTime)}</li>
             <li><strong>Amount Due:</strong> ${window.SPMS.formatCurrency(session.amountDue)}</li>
-            <li><strong>Payment Status:</strong> ${isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}</li>
+            <li><strong>Exit Payment Required:</strong> ${exitValidation.paymentRequiredAtExit ? 'Có' : 'Không'}</li>
+            <li><strong>Payment Status:</strong> ${exitValidation.isPaid ? 'Đã thanh toán' : (exitValidation.paymentRequiredAtExit ? 'Chưa thanh toán' : 'Chưa thanh toán (không bắt buộc khi ra cổng)')}</li>
         </ul>
     `;
     renderGateStatus(db);
@@ -106,14 +107,18 @@ function validateExit() {
     }
 
     const meta = window.SPMS.getSessionMeta(session, db);
-    const isPaid = session.paymentStatus === 'PAID' || meta.ticket?.paymentStatus === 'PAID';
+    const exitValidation = window.SPMS.getExitValidation(session, db);
 
     window.SPMS.writeSystemLog({
         moduleCode: 'M2_EXIT',
-        severity: isPaid ? 'INFO' : 'WARN',
-        action: isPaid ? 'EXIT_VALIDATED' : 'EXIT_BLOCKED_UNPAID',
-        message: isPaid
-            ? `Exit validated for ${meta.credential}. Gate can be opened.`
+        severity: exitValidation.canExit ? 'INFO' : 'WARN',
+        action: exitValidation.canExit
+            ? (exitValidation.paymentRequiredAtExit ? 'EXIT_VALIDATED' : 'EXIT_VALIDATED_NO_PAYMENT_REQUIRED')
+            : 'EXIT_BLOCKED_UNPAID',
+        message: exitValidation.canExit
+            ? (exitValidation.paymentRequiredAtExit
+                ? `Exit validated for ${meta.credential}. Gate can be opened.`
+                : `Exit validated for ${meta.credential}. Exit payment is not required by policy.`)
             : `Exit blocked for ${meta.credential}. Payment is still pending.`
     }, db);
 
@@ -147,8 +152,8 @@ function openGate() {
         }
 
         const meta = window.SPMS.getSessionMeta(session, db);
-        const isPaid = session.paymentStatus === 'PAID' || meta.ticket?.paymentStatus === 'PAID';
-        if (!isPaid) return;
+        const exitValidation = window.SPMS.getExitValidation(session, db);
+        if (!exitValidation.canExit) return;
 
         db.gateStatus.exitGate = 'OPENED';
         window.SPMS.writeSystemLog({
@@ -201,7 +206,7 @@ function openGate() {
             window.SPMS.saveDb(nextDb);
             renderGateStatus(nextDb);
             renderLogs();
-        }, 1800);
+        }, 5000);
     }
 }
 

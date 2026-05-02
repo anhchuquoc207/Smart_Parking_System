@@ -59,8 +59,7 @@
             ],
             rolesPermissions: [
                 { role: 'admin', canValidateExit: true, canManagePricing: true, canViewLogs: true },
-                { role: 'operator', canValidateExit: true, canManagePricing: false, canViewLogs: true },
-                { role: 'student', canValidateExit: false, canManagePricing: false, canViewLogs: false }
+                { role: 'operator', canValidateExit: true, canManagePricing: false, canViewLogs: true }
             ],
             gateStatus: { exitGate: 'LOCKED' },
             systemLogs: [
@@ -78,10 +77,23 @@
             parkingSlots: Array.isArray(db?.parkingSlots) ? db.parkingSlots : fresh.parkingSlots,
             parkingSessions: Array.isArray(db?.parkingSessions) ? db.parkingSessions : fresh.parkingSessions,
             feePolicies: Array.isArray(db?.feePolicies) ? db.feePolicies : fresh.feePolicies,
-            rolesPermissions: Array.isArray(db?.rolesPermissions) ? db.rolesPermissions : fresh.rolesPermissions,
+            rolesPermissions: Array.isArray(db?.rolesPermissions)
+                ? db.rolesPermissions
+                    .filter((item) => item && ['admin', 'operator'].includes(item.role))
+                    .map((item) => ({
+                        role: item.role,
+                        canValidateExit: Boolean(item.canValidateExit),
+                        canManagePricing: Boolean(item.canManagePricing),
+                        canViewLogs: Boolean(item.canViewLogs)
+                    }))
+                : fresh.rolesPermissions,
             gateStatus: db?.gateStatus || fresh.gateStatus,
             systemLogs: Array.isArray(db?.systemLogs) ? db.systemLogs : fresh.systemLogs
         };
+
+        if (!normalized.rolesPermissions.length) {
+            normalized.rolesPermissions = fresh.rolesPermissions;
+        }
 
         // Repair slot/session links so Module 1, 2, 4, 5, and 6 stay synced.
         normalized.parkingSlots.forEach((slot) => {

@@ -217,21 +217,28 @@ function savePolicies() {
     const db = window.SPMS.loadDb();
     const rolePerms = currentRolePermissions(db);
     if (!rolePerms.canManagePricing) return;
+
+    const changes = [];
     document.querySelectorAll('[data-policy]').forEach((input) => {
         const policy = db.feePolicies.find((item) => item.id === input.dataset.policy);
         if (!policy) return;
         if (input.dataset.field === 'flatRate') {
-            policy.flatRate = Number(input.value || 0);
+            const nextRate = Number(input.value || 0);
+            if (policy.flatRate !== nextRate) changes.push(`${policy.label}: Flat Rate ${policy.flatRate} -> ${nextRate}`);
+            policy.flatRate = nextRate;
         }
         if (input.dataset.field === 'paymentRequiredAtExit') {
-            policy.paymentRequiredAtExit = input.checked;
+            const nextRequired = input.checked;
+            if (policy.paymentRequiredAtExit !== nextRequired) changes.push(`${policy.label}: Exit Payment Required ${policy.paymentRequiredAtExit ? 'ON' : 'OFF'} -> ${nextRequired ? 'ON' : 'OFF'}`);
+            policy.paymentRequiredAtExit = nextRequired;
         }
     });
+
     window.SPMS.writeSystemLog({
         moduleCode: 'M6_ADMIN',
         severity: 'INFO',
         action: 'FEE_POLICIES_UPDATED',
-        message: `Fee policies were updated by ${currentRole()}.`
+        message: changes.length ? changes.join(' | ') : `Fee policies were saved by ${currentRole()} with no value changes.`
     }, db);
     window.SPMS.saveDb(db);
     renderAll();

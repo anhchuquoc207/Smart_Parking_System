@@ -41,7 +41,12 @@ function renderNoSession() {
 function renderSession(session) {
     const started = new Date(session.entryTime).getTime();
     const durationMins = Math.max(1, Math.floor((Date.now() - started) / 60000));
-    const paid = session.paymentStatus === 'PAID';
+    const exitValidation = window.SPMS.getExitValidation(session);
+    const paid = exitValidation.isPaid;
+    const paymentButtonLabel = paid ? 'PAID' : (exitValidation.paymentRequiredAtExit ? 'PAY NOW' : 'PAY NOW (OPTIONAL)');
+    const policyHint = exitValidation.paymentRequiredAtExit
+        ? 'Payment required before exit.'
+        : 'Exit payment currently optional.';
 
     currentSessionId = session.id;
     sessionCard.innerHTML = `
@@ -49,7 +54,8 @@ function renderSession(session) {
         <p class="main-info">Slot: ${session.slotName} | Plate: ${session.plate}</p>
         <p class="sub-info">Duration: ${minutesToText(durationMins)} | Fee: ${window.SPMS.formatCurrency(session.amountDue)}</p>
         <p class="sub-info">Ticket: ${session.ticketCode} | Status: ${paid ? 'Paid' : 'Unpaid'}</p>
-        <button id="btn-pay-now" class="btn ${paid ? '' : 'btn-orange'}" ${paid ? 'disabled' : ''}>${paid ? 'PAID' : 'PAY NOW'}</button>
+        <p class="sub-info">${policyHint}</p>
+        <button id="btn-pay-now" class="btn ${paid ? '' : 'btn-orange'}" ${paid ? 'disabled' : ''}>${paymentButtonLabel}</button>
     `;
 
     const freshBtn = document.getElementById('btn-pay-now');
