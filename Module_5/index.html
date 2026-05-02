@@ -11,7 +11,7 @@
     <div class="dashboard-container">
         <div class="header">
             <div>
-                <button type="button" class="back-btn" onclick="history.back();">←</button>
+                 <button type="button" class="back-btn" onclick="history.back();">←</button>
                 <h1>IoT Occupancy Dashboard</h1>
                 <p class="subtitle">Module 5: Sensor Management System</p>
             </div>
@@ -30,14 +30,19 @@
                 </div>
             </div>
         </div>
-
-        <div class="control-panel">
-               <button id="btn-scene-morning" class="btn btn-outline">Morning Rush</button>
-                <button id="btn-scene-lunch" class="btn btn-outline">Lunch Break</button>
-                <button id="btn-scene-night" class="btn btn-outline">Night Time</button>
-                <button id="btn-scene-full" class="btn btn-outline">Full Capacity</button>
-                <button id="btn-reset" class="btn btn-outline">Clear All</button>
-  </div>
+       
+<div class="signage-preview">
+    <div class="signage-box">
+        <div class="signage-title">ZONE A</div>
+        <div class="signage-status">AVAILABLE</div>
+        <div class="signage-count" id="sign-a-avail">50/50</div>
+    </div>
+    <div class="signage-box">
+        <div class="signage-title">ZONE B</div>
+        <div class="signage-status">AVAILABLE</div>
+        <div class="signage-count" id="sign-b-avail">50/50</div>
+    </div>
+</div>
 
         <div id="parking-grid" 
            
