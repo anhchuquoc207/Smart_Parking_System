@@ -321,6 +321,28 @@
         ];
     }
 
+    function getExitValidation(session, db = loadDb()) {
+    const policy = Array.isArray(db?.feePolicies) ? db.feePolicies[0] : null;
+    const paymentRequiredAtExit = policy
+        ? policy.paymentRequiredAtExit !== false
+        : true;
+
+    const isPaid =
+        session?.paymentStatus === 'PAID' ||
+        Number(session?.amountDue || 0) <= 0;
+
+    const canExit =
+        Boolean(session) &&
+        session.status === 'ACTIVE' &&
+        (!paymentRequiredAtExit || isPaid);
+
+    return {
+        isPaid,
+        paymentRequiredAtExit,
+        canExit
+    };
+}
+
     function getDemoUserSession(db = loadDb()) {
         const activeSessions = [...db.parkingSessions]
             .filter((item) => item.status === 'ACTIVE');
@@ -348,6 +370,7 @@
         getZoneAvailability,
         getActiveSessionByLookup,
         getSessionMeta,
+        getExitValidation,
         paySession,
         completeExit,
         createParkingSession,
