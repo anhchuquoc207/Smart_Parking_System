@@ -11,7 +11,7 @@
     <div class="dashboard-container">
         <div class="header">
             <div>
-                 <button type="button" class="back-btn" onclick="history.back();">←</button>
+        <button type="button" class="back-btn" onclick="window.SPMS_UI?.goBack() || history.back();">←</button>
                 <h1>IoT Occupancy Dashboard</h1>
                 <p class="subtitle">Module 5: Sensor Management System</p>
             </div>
@@ -32,14 +32,14 @@
         </div>
        
 <div class="signage-preview">
-    <div class="signage-box">
-        <div class="signage-title">ZONE A</div>
-        <div class="signage-status">AVAILABLE</div>
+    <div class="signage-box" id="sign-box-a">
+        <div class="signage-title" style="color:white !important;">ZONE A</div>
+        <div class="signage-status" id="sign-a-status">AVAILABLE</div>
         <div class="signage-count" id="sign-a-avail">50/50</div>
     </div>
-    <div class="signage-box">
-        <div class="signage-title">ZONE B</div>
-        <div class="signage-status">AVAILABLE</div>
+    <div class="signage-box" id="sign-box-b">
+        <div class="signage-title" style="color:white !important;">ZONE B</div>
+        <div class="signage-status" id="sign-b-status">AVAILABLE</div>
         <div class="signage-count" id="sign-b-avail">50/50</div>
     </div>
 </div>
@@ -48,6 +48,8 @@
            
     </div>
 
+    <script src="../shared/spms-db.js"></script>
+    <script src="../shared/spms-ui.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
